@@ -155,7 +155,7 @@ The income clears the Rs. 30,000 minimum, so it is the short contract that fails
 | `creditwise.pl` | Main loader. **Start here.** |
 | `kb_facts.pl` | Knowledge base: 25 facts, each with its interview source |
 | `kb_rules.pl` | Knowledge base: 63 rules, declared as data |
-| `engine.pl` | Inference engine: forward chaining, backward chaining, explanation |
+| `engine.pl` | Inference engine: forward chaining, backward chaining, explanation, native clauses |
 | `ui.pl` | Command line interface |
 | `tests.pl` | 16 test cases |
 | `README.md` | This file |
@@ -170,12 +170,23 @@ The income clears the Rs. 30,000 minimum, so it is the short contract that fails
 rule(Id, Stratum, Conclusion, [Condition, ...], Description).
 ```
 
-Writing rules as data instead of as ordinary Prolog clauses is what lets **one** rule base be run by **two** different engines, with no knowledge duplicated.
+Writing rules as data instead of as ordinary Prolog clauses is what lets **one** rule base be run three different ways, with no knowledge duplicated.
 
-**The inference engine** provides both mechanisms:
+**The inference engine** provides both required mechanisms:
 
 - **Forward chaining** (`forward_chain/0`) is data driven. It starts from the applicant's facts and fires every rule whose conditions hold, until nothing further can be derived. This produces the decision and the reasoning trail.
 - **Backward chaining** (`prove/2`) is goal driven. Given a goal such as `decision(approve)`, it works backwards through the rules until it reaches the facts, and returns a proof tree.
+
+**Native clauses.** A `rule/5` term is strictly a fact, so `compile_native_rules/0` also compiles the same 63 terms into ordinary clauses at load time. The knowledge can then be run by SWI-Prolog's own resolution. Load an applicant first, then query directly:
+
+```prolog
+?- test_case(tc1, _, _, Facts, _, _), load_case(Facts).
+?- eligible.
+?- decision(D).
+D = approve.
+```
+
+With nothing loaded these fail rather than answering from an empty working memory.
 
 Rules run in four strata, so that a rule using negation is never evaluated before the facts it negates have been derived:
 
@@ -195,11 +206,14 @@ All **16 of 16** cases pass (menu option 4).
 - **TC1 to TC4 are expert verified.** The expected decision and grade are the answers the expert gave to the four scenarios in Part 4 of the interview form. These are the main validation of the system.
 - **TC5 to TC16 are system verification cases**, covering rules Part 4 did not reach: the pensioner age concession, the CRIB rejection triggers, probation, renewable foreign contracts, the product ceilings, both self employed routes, and both sides of the income floor.
 
+Each case reports its expected result, its actual result and the rules that fired, so a right answer reached by wrong reasoning would still be caught:
+
 ```
-  PASS  [TC1]  expert verified    approve / low
-  PASS  [TC2]  expert verified    reject / not_applicable
-  PASS  [TC3]  expert verified    approve_with_conditions / high
-  PASS  [TC4]  expert verified    reject / not_applicable
+  PASS  [TC1]  expert verified, Interview Part 4
+        Age 32, permanent private, 5 yrs service, income 120,000, ...
+        expected: approve / low
+        actual  : approve / low
+        rules fired: [r1,r2,r4,r6,r13,r15,r16,r17,r18,r24,r38,r41,r49,r53,r58,r62]
   ...
   16 of 16 test cases passed.
 ```
@@ -212,5 +226,5 @@ All **16 of 16** cases pass (menu option 4).
 |---|---|
 | `start.` does nothing | Add the full stop at the end |
 | Nothing happens after typing a number | Press Enter |
-| `Unknown procedure: start/0` | Run `swipl creditwise.pl` from inside the folder holding all six files |
+| `Unknown procedure: start/0` | Run `swipl creditwise.pl` from inside the folder holding all seven files |
 | Option 2 says no assessment has been run | Run option 1 or option 4 first |

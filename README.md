@@ -14,7 +14,7 @@ CreditWise assesses a personal loan application the way a branch loan officer do
 2. a **risk grade**: low, medium or high
 3. an **explanation**: which rules fired, and the interview question each rule came from
 
-The knowledge base holds **25 facts and 63 rules** (the assignment requires at least 20 rules).
+The knowledge base holds **25 facts and 63 rules**.
 
 ---
 

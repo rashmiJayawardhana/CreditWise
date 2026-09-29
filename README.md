@@ -44,7 +44,7 @@ Only **SWI-Prolog** is needed. No libraries, no internet connection, no configur
 | macOS | `brew install swi-prolog` |
 | Ubuntu or Debian | `sudo apt install swi-prolog` |
 
-Check it worked with `swipl --version`. Tested on 9.0.4; any version from 8.0 upwards is fine.
+Check it worked with `swipl --version`. Tested on 10.0.2; any version from 8.0 upwards is fine.
 
 ---
 
@@ -226,5 +226,5 @@ Each case reports its expected result, its actual result and the rules that fire
 |---|---|
 | `start.` does nothing | Add the full stop at the end |
 | Nothing happens after typing a number | Press Enter |
-| `Unknown procedure: start/0` | Run `swipl creditwise.pl` from inside the folder holding all seven files |
+| `Unknown procedure: start/0` | Run `swipl creditwise.pl` from inside the folder holding all six files |
 | Option 2 says no assessment has been run | Run option 1 or option 4 first |

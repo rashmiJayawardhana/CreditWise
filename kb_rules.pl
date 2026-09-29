@@ -2,22 +2,17 @@
 %  CreditWise Expert System
 %  kb_rules.pl  -  Knowledge base: RULES
 %
-%  Every rule is declared once, as data:
-%
 %      rule(Id, Stratum, Conclusion, [Condition, ...], Description).
+%      rule_source(Id, 'the interview question it came from').
 %
-%  Declaring rules as data rather than as clauses lets the SAME rule base
-%  be run by both engines in engine.pl, with no knowledge written twice.
+%  Rules are data, not clauses, so one rule base serves both engines.
 %
-%  Stratum sets the order the forward chainer saturates in, so a rule using
-%  absent/1 is never evaluated before the facts it negates are derived.
+%  Stratum sets the saturation order, so a rule using absent/1 is never
+%  evaluated before the facts it negates are derived.
 %      1  eligibility sub-goals (no negation)
 %      2  overall eligibility, rejections, individual risk factors
 %      3  overall risk grade (worst factor wins)
 %      4  decision, conditions, requirements
-%
-%  The rule_source/2 clause under each rule names the interview question it
-%  came from. The interview itself is recorded in kb_facts.pl.
 % ===========================================================================
 
 :- discontiguous rule/5.

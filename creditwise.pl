@@ -10,13 +10,6 @@
 %  HOW TO RUN
 %      swipl creditwise.pl
 %      ?- start.
-%
-%  The system loads in this order:
-%      kb_facts.pl   facts and thresholds acquired from the domain expert
-%      kb_rules.pl   the 63 rules, declared as data
-%      engine.pl     forward chaining, backward chaining, explanation
-%      tests.pl      the test cases
-%      ui.pl         the command line interface
 % ===========================================================================
 
 :- set_prolog_flag(verbose, silent).

@@ -78,8 +78,7 @@ ask_number(Prompt, Min, Max, Value) :-
         ask_number(Prompt, Min, Max, Value)
     ).
 
-% ask_choice(+Prompt, +Options, -Value)
-%   Options is a list of Label-Value pairs.
+% Options is a list of Label-Value pairs.
 ask_choice(Prompt, Options, Value) :-
     nl,
     writeln(Prompt),
@@ -158,8 +157,8 @@ collect_employment_detail(self_employed) :-
     ask_number('  Years the business has been trading (0 if it is new): ',
                0, 60, Years),
     set_fact(service_years, Years),
-    % Asked of every self employed applicant: NSB applies no minimum years
-    % in business, so a new business qualifies on its proposal alone.
+    % Always asked: NSB applies no minimum years in business, so a new
+    % business qualifies on its proposal alone.
     ask_yes_no('  Has the business proposal been evaluated and approved?',
                Approved),
     set_fact(business_proposal_approved, Approved).

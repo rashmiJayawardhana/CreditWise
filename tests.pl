@@ -2,13 +2,9 @@
 %  CreditWise Expert System
 %  tests.pl  -  TEST CASES
 %
-%  TC1 to TC4 are EXPERT VERIFIED: their expected decision and grade are
-%  the expert's own answers to Part 4 of the Knowledge Acquisition Form,
-%  so they validate the rules against practice.
-%
-%  TC5 to TC16 are SYSTEM VERIFICATION: they exercise rules Part 4 did not
-%  reach (pensioner concession, CRIB rejection triggers, probation, foreign
-%  contracts, product ceilings, both self employed routes, income floor).
+%  TC1 to TC4 are EXPERT VERIFIED: the expected results are the expert's
+%  own answers to Part 4 of the Knowledge Acquisition Form.
+%  TC5 to TC16 are SYSTEM VERIFICATION: rules Part 4 did not reach.
 % ===========================================================================
 
 % test_case(Id, Origin, Description, Facts, ExpectedDecision, ExpectedGrade).

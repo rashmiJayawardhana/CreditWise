@@ -10,9 +10,9 @@ G.G.R.M. Jayawardhana (214093E)
 
 CreditWise assesses a personal loan application the way a branch loan officer does, and gives three outputs:
 
-1. a **decision** — approve, approve with conditions, or reject
-2. a **risk grade** — low, medium or high
-3. an **explanation** — which rules fired, and the interview question each rule came from
+1. a **decision**: approve, approve with conditions, or reject
+2. a **risk grade**: low, medium or high
+3. an **explanation**: which rules fired, and the interview question each rule came from
 
 The knowledge base holds **25 facts and 63 rules** (the assignment requires at least 20 rules).
 
@@ -62,7 +62,7 @@ Then at the `?-` prompt type:
 start.
 ```
 
-Do not forget the full stop — Prolog will not run a goal without it.
+Do not forget the full stop. Prolog will not run a goal without it.
 
 To run just the tests, without the menu:
 
@@ -90,7 +90,7 @@ swipl -q -g "run_tests, halt." creditwise.pl
 | 2 | Prints every rule that fired in the order it fired, with its source. **Run option 1 or 4 first.** |
 | 3 | Pick a conclusion and the system proves it step by step from the facts, as a proof tree. |
 | 4 | Runs all 16 test cases and prints a pass or fail line for each. |
-| 5 | Prints the whole knowledge base — all 25 facts and 63 rules in IF / THEN form, each with its interview source. |
+| 5 | Prints the whole knowledge base: all 25 facts and 63 rules in IF / THEN form, each with its interview source. |
 | 6 | Shows the facts currently held about the applicant. |
 
 Type `0` to leave the menu, then `halt.` to leave Prolog.
@@ -152,7 +152,7 @@ The income clears the Rs. 30,000 minimum, so it is the short contract that fails
 
 | File | Contents |
 |---|---|
-| `creditwise.pl` | Main loader — **start here** |
+| `creditwise.pl` | Main loader. **Start here.** |
 | `kb_facts.pl` | Knowledge base: 25 facts, each with its interview source |
 | `kb_rules.pl` | Knowledge base: 63 rules, declared as data |
 | `engine.pl` | Inference engine: forward chaining, backward chaining, explanation |
@@ -192,8 +192,8 @@ Rules run in four strata, so that a rule using negation is never evaluated befor
 
 All **16 of 16** cases pass (menu option 4).
 
-- **TC1–TC4 are expert verified.** The expected decision and grade are the answers the expert gave to the four scenarios in Part 4 of the interview form. These are the main validation of the system.
-- **TC5–TC16 are system verification cases**, covering rules Part 4 did not reach: the pensioner age concession, the CRIB rejection triggers, probation, renewable foreign contracts, the product ceilings, both self employed routes, and both sides of the income floor.
+- **TC1 to TC4 are expert verified.** The expected decision and grade are the answers the expert gave to the four scenarios in Part 4 of the interview form. These are the main validation of the system.
+- **TC5 to TC16 are system verification cases**, covering rules Part 4 did not reach: the pensioner age concession, the CRIB rejection triggers, probation, renewable foreign contracts, the product ceilings, both self employed routes, and both sides of the income floor.
 
 ```
   PASS  [TC1]  expert verified    approve / low

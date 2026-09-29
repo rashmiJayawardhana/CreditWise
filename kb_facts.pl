@@ -2,15 +2,12 @@
 %  CreditWise Expert System
 %  kb_facts.pl  -  Knowledge base: FACTS
 %
-%  Every threshold below was obtained from a structured interview with a
-%  domain expert. No value in this file was invented by the developer.
+%  Holds the thresholds, the value sets and the working memory.
 %
-%  SOURCE OF ALL FACTS:
-%    Expert   : Ms. Dilshara Sewwandi, Deputy Manager
-%    Institute: National Savings Bank (NSB), Wadduwa Branch
-%    Date     : 28 September 2026
-%    Instrument: "Knowledge Acquisition Form: Personal Loan Assessment"
-%                (signed original attached as Annex A of the report)
+%  SOURCE OF ALL FACTS
+%    Ms. Dilshara Sewwandi, Deputy Manager, National Savings Bank,
+%    Wadduwa Branch. Knowledge Acquisition Form, 28 September 2026.
+%    Completed form: Annex A of the report.
 % ===========================================================================
 
 :- dynamic af/2.          % af(Attribute, Value) - facts about the current applicant
@@ -18,10 +15,10 @@
 :- discontiguous threshold_source/2.
 
 % ---------------------------------------------------------------------------
-% F1 - F20 : THRESHOLD FACTS ACQUIRED FROM THE EXPERT
+% THRESHOLDS ACQUIRED FROM THE EXPERT
+%   threshold(Name, Value).
+%   threshold_source(Name, 'the interview question it came from').
 % ---------------------------------------------------------------------------
-% threshold(Name, Value).
-% threshold_source(Name, 'where the expert stated it').
 
 threshold(min_age, 18).
 threshold_source(min_age,
@@ -122,10 +119,8 @@ threshold_source(grade_affects,
 
 % ---------------------------------------------------------------------------
 % DOCUMENTED ASSUMPTIONS
-%
-% The interview did not fix these three values. They are marked clearly so
-% they are engineering defaults, not expert rules.
-% Each is stated in Section 3.4 (Assumptions) of the report.
+% The interview did not fix these three values. They are engineering
+% defaults, not expert knowledge, and each says so in its source clause.
 % ---------------------------------------------------------------------------
 
 threshold(min_contract_months, 12).

@@ -2,19 +2,16 @@
 %  CreditWise Expert System
 %  engine.pl  -  INFERENCE ENGINE and EXPLANATION FACILITY
 %
-%  Two independent inference mechanisms run over the same rule base:
+%  Holds no banking knowledge. Two inference mechanisms run over the same
+%  rule base in kb_rules.pl:
 %
-%  1. FORWARD CHAINING (data driven)
-%     Starts from the facts in working memory and repeatedly fires every
-%     rule whose conditions are satisfied, asserting each new conclusion,
-%     until no further conclusion can be added (a fixpoint). Used to reach
-%     the recommendation and to build the reasoning trail.
+%  1. FORWARD CHAINING (data driven)   - fires every rule whose conditions
+%     hold until nothing more can be derived. Gives the whole consultation.
+%  2. BACKWARD CHAINING (goal driven)  - a meta interpreter that proves one
+%     named goal and returns its proof tree.
 %
-%  2. BACKWARD CHAINING (goal driven)
-%     A meta interpreter that takes a goal such as decision(approve) and
-%     works backwards, proving each condition of each candidate rule, until
-%     it reaches facts in working memory. Used to answer "why" and to prove
-%     one specific conclusion without deriving everything else.
+%  Part 3 explains either result. Part 4 compiles the same rules into
+%  ordinary Prolog clauses so they can also be queried at the ?- prompt.
 % ===========================================================================
 
 :- dynamic derived/3.        % derived(Fact, RuleId, Sequence)
@@ -27,9 +24,8 @@ derive_counter(0).
 % ===========================================================================
 
 % forward_chain/0
-% Clears any previous run, then saturates each stratum in order.
-% Stratification guarantees that a rule using absent/1 is only evaluated
-% after every fact it could negate has already been derived.
+% Clears the last run, then saturates each stratum in order. Working
+% through the strata in order is what keeps absent/1 sound.
 forward_chain :-
     retractall(derived(_, _, _)),
     retractall(derive_counter(_)),
@@ -60,8 +56,8 @@ holds_all([Condition | Rest]) :-
     holds_all(Rest).
 
 % holds(+Condition)
-% absent/1 is negation as failure. It is safe here only because the rule
-% base is stratified.
+% absent/1 is negation as failure, sound here only because the rule base
+% is stratified.
 holds(absent(Goal)) :-
     !,
     \+ holds(Goal).
@@ -83,8 +79,8 @@ conclusion(risk, Grade) :-
     ( derived(risk(Grade), _, _) -> true ; Grade = not_applicable ).
 
 % final_grade(-Grade)
-% The expert left the risk grade blank for both rejected cases in Part 4 of
-% the interview, so a rejected application reports no grade.
+% The expert left the grade blank for both rejected cases in Part 4, so a
+% rejected application reports no grade.
 final_grade(Grade) :-
     (   derived(decision(reject), _, _)
     ->  Grade = not_applicable
@@ -198,3 +194,83 @@ print_proof(node(Goal, RuleId, Subs), Indent) :-
 % Convenience wrapper used by the menu.
 why(Conclusion) :-
     explain_backward(Conclusion).
+
+% ===========================================================================
+% PART 4  -  NATIVE PROLOG CLAUSES
+%
+%  A rule/5 term is strictly a FACT: it has no :- operator. This part
+%  compiles the same 63 terms, once, into ordinary clauses of the form
+%
+%      Conclusion :- Condition, Condition, ...
+%
+%  so the knowledge can also be proved by SWI-Prolog's own resolution.
+%  Nothing is written twice; the clauses are generated from the rule base.
+%
+%  Load an applicant first, through menu option 1 or at the prompt:
+%
+%      ?- test_case(tc1, _, _, Facts, _, _), load_case(Facts).
+%      ?- eligible.
+%      ?- risk(G).
+%      ?- decision(D).
+%
+%  With nothing loaded these fail instead of answering. See guarded_body/2.
+% ===========================================================================
+
+:- dynamic native_rules_compiled/0.
+
+% conditions_to_body(+ConditionList, -PrologBody)
+% Turns the list of conditions into a conjunction, the body of a clause.
+conditions_to_body([], true).
+conditions_to_body([C], Goal) :-
+    !,
+    condition_goal(C, Goal).
+conditions_to_body([C | Rest], (Goal, RestBody)) :-
+    condition_goal(C, Goal),
+    conditions_to_body(Rest, RestBody).
+
+% absent/1 becomes negation as failure in the compiled clause.
+condition_goal(absent(Goal), \+ Goal) :- !.
+condition_goal(Goal, Goal).
+
+% applicant_loaded/0
+% True once working memory holds an applicant. The cut stops it succeeding
+% once per fact, which would multiply every solution.
+applicant_loaded :-
+    af(_, _),
+    !.
+
+% guarded_body(+Conditions, -Body)
+% To negation as failure, "no fact recorded" looks the same as "the test
+% failed", so a rule using absent/1 would fire on an empty working memory
+% and answer decision(reject) with no applicant present. Those rules are
+% guarded. A rule with a positive condition already needs a fact, so it
+% needs no guard.
+guarded_body(Conditions, Body) :-
+    (   memberchk(absent(_), Conditions)
+    ->  conditions_to_body(Conditions, Inner),
+        Body = (applicant_loaded, Inner)
+    ;   conditions_to_body(Conditions, Body)
+    ).
+
+% compile_native_rules/0
+% Asserts one ordinary Prolog clause for every rule in the rule base.
+compile_native_rules :-
+    (   native_rules_compiled
+    ->  true
+    ;   forall(rule(_Id, _Stratum, Conclusion, Conditions, _Description),
+               (   guarded_body(Conditions, Body),
+                   assertz((Conclusion :- Body))
+               )),
+        assertz(native_rules_compiled)
+    ).
+
+% show_native_clause(+RuleId)
+% Prints one rule in ordinary Prolog syntax, for the report and for demos.
+show_native_clause(Id) :-
+    rule(Id, _, Conclusion, Conditions, _),
+    guarded_body(Conditions, Body),
+    copy_term(Conclusion-Body, C-B),
+    numbervars(C-B, 0, _),
+    format('~q :-~n    ~q.~n', [C, B]).
+
+:- initialization(compile_native_rules).

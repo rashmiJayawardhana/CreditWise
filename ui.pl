@@ -158,8 +158,8 @@ collect_employment_detail(self_employed) :-
     ask_number('  Years the business has been trading (0 if it is new): ',
                0, 60, Years),
     set_fact(service_years, Years),
-    % Asked of every self employed applicant, because NSB applies no minimum
-    % years in business. A new business qualifies on its proposal alone.
+    % Asked of every self employed applicant: NSB applies no minimum years
+    % in business, so a new business qualifies on its proposal alone.
     ask_yes_no('  Has the business proposal been evaluated and approved?',
                Approved),
     set_fact(business_proposal_approved, Approved).
@@ -167,10 +167,10 @@ collect_employment_detail(pensioner) :-
     !,
     ask_number('  Years since retirement: ', 0, 60, Years),
     set_fact(service_years, Years).
-collect_employment_detail(Employment) :-
+% Government permanent, private permanent and probation.
+collect_employment_detail(_) :-
     ask_number('  Years of service with the current employer: ', 0, 60, Years),
     set_fact(service_years, Years),
-    ( Employment == probation -> true ; true ),
     ask_salary_remittance.
 
 ask_salary_remittance :-

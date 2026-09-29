@@ -2,37 +2,30 @@
 %  CreditWise Expert System
 %  kb_rules.pl  -  Knowledge base: RULES
 %
-%  Every rule is declared once, as data, in the form
+%  Every rule is declared once, as data:
 %
 %      rule(Id, Stratum, Conclusion, [Condition, ...], Description).
 %
-%  Declaring rules as data rather than as ordinary Prolog clauses lets the
-%  SAME rule base be executed by BOTH inference engines:
-%      - the forward chaining engine (data driven, engine.pl)
-%      - the backward chaining meta interpreter (goal driven, engine.pl)
-%  This is what allows the system to demonstrate both mechanisms on one
-%  knowledge base, as required by the assignment.
+%  Declaring rules as data rather than as clauses lets the SAME rule base
+%  be run by both engines in engine.pl, with no knowledge written twice.
 %
-%  Stratum controls the order in which the forward chainer saturates, so
-%  that a rule using absent/1 (negation as failure) is never evaluated
-%  before the facts it negates have finished being derived.
-%      Stratum 1 : eligibility sub-goals            (pure positive rules)
-%      Stratum 2 : overall eligibility, rejections, individual risk factors
-%      Stratum 3 : overall risk grade               (worst factor wins)
-%      Stratum 4 : final decision, conditions, requirements
+%  Stratum sets the order the forward chainer saturates in, so a rule using
+%  absent/1 is never evaluated before the facts it negates are derived.
+%      1  eligibility sub-goals (no negation)
+%      2  overall eligibility, rejections, individual risk factors
+%      3  overall risk grade (worst factor wins)
+%      4  decision, conditions, requirements
 %
-%  SOURCE: all rules derive from the expert interview recorded in
-%  kb_facts.pl. The rule_source/2 clause under each rule names the exact
-%  question on the Knowledge Acquisition Form it came from.
+%  The rule_source/2 clause under each rule names the interview question it
+%  came from. The interview itself is recorded in kb_facts.pl.
 % ===========================================================================
 
 :- discontiguous rule/5.
 :- discontiguous rule_source/2.
 
 % ---------------------------------------------------------------------------
-% PRIMITIVE (directly evaluable) CONDITIONS
-% Anything listed here is called straight away instead of being proved
-% against the rule base.
+% PRIMITIVE CONDITIONS
+% Called straight away instead of being proved against the rule base.
 % ---------------------------------------------------------------------------
 
 primitive(af(_, _)).
@@ -100,9 +93,8 @@ rule(r6, 1, service_eligible,
 rule_source(r6, 'Interview Part 1, Q4').
 
 % --- R7 : self employed, assessed on trading history ------------------------
-% NSB applies NO minimum years in business. This rule is simply the route
-% for a business that already has trading history to show. A business with
-% no trading history qualifies under R8 instead.
+% NSB applies NO minimum years in business. This is only the route for a
+% business that has trading history; a new one qualifies under R8.
 rule(r7, 1, service_eligible,
      [ af(employment, self_employed), af(service_years, Y),
        threshold(business_trading_history_years, T), ge(Y, T) ],
@@ -271,9 +263,8 @@ rule(r34, 2, rejected(period_over_maximum),
      'A repayment period beyond 144 months is outside the product.').
 rule_source(r34, 'Interview Part 1, Q12').
 
-% --- R35 to R39 : risk factor, employment type ------------------------------
-% The expert named only the lowest and the highest risk employment types.
-% The remaining types are placed between them.
+% --- R35 to R40 : risk factor, employment type ------------------------------
+% The expert named only the lowest and highest types. The rest sit between.
 rule(r35, 2, risk_factor(employment, low),
      [ af(employment, pensioner) ],
      'A pensioner is the lowest risk employment type.').
@@ -306,8 +297,8 @@ rule(r40, 2, risk_factor(employment, medium),
 rule_source(r40, 'Interview Part 1, Q6 and Part 3, Q4').
 
 % --- R41, R42 : risk factor, length of service ------------------------------
-% A pensioner has no current service, so the service length factor does not
-% apply to them. Their employment factor (R35) governs instead.
+% A pensioner has no current service, so this factor does not apply to
+% them; their employment factor (R35) governs instead.
 rule(r41, 2, risk_factor(service, low),
      [ af(employment, E), neq(E, pensioner),
        af(service_years, Y), threshold(low_risk_service_years, T), ge(Y, T) ],

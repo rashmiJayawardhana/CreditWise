@@ -2,14 +2,13 @@
 %  CreditWise Expert System
 %  tests.pl  -  TEST CASES
 %
-%  Cases TC1 to TC4 are EXPERT VERIFIED. The expected decision and grade for
-%  each were given by Ms. Dilshara Sewwandi in Part 4 of the Knowledge
-%  Acquisition Form. They are the primary validation of the system.
+%  TC1 to TC4 are EXPERT VERIFIED: their expected decision and grade are
+%  the expert's own answers to Part 4 of the Knowledge Acquisition Form,
+%  so they validate the rules against practice.
 %
-%  Cases TC5 to TC12 are SYSTEM VERIFICATION cases 
-%  to exercise rules that Part 4 did not reach (pensioner concession, CRIB
-%  rejection triggers, probation, foreign contracts, product ceilings).
-%  Their expected results follow from the rules in kb_rules.pl.
+%  TC5 to TC16 are SYSTEM VERIFICATION: they exercise rules Part 4 did not
+%  reach (pensioner concession, CRIB rejection triggers, probation, foreign
+%  contracts, product ceilings, both self employed routes, income floor).
 % ===========================================================================
 
 % test_case(Id, Origin, Description, Facts, ExpectedDecision, ExpectedGrade).
